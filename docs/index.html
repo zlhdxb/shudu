@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2563eb">
+<meta name="description" content="点击即玩的数独：四档难度，题目现场生成且保证唯一解，支持提示、笔记、撤销、计时。纯前端，无需安装。">
+<title>数独 · 点击即玩</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232563eb'/><g fill='none' stroke='white' stroke-width='2.2'><rect x='6.5' y='6.5' width='19' height='19'/><path d='M13 6.5v19M19 6.5v19M6.5 13h19M6.5 19h19'/></g></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>数独</h1>
+      <span class="sub" id="sub">点开就能玩 · 题目现场生成</span>
+    </div>
+    <div class="controls">
+      <label class="field">
+        <span>难度</span>
+        <select id="level">
+          <option>简单</option>
+          <option selected>中等</option>
+          <option>困难</option>
+          <option>专家</option>
+        </select>
+      </label>
+      <button id="new" class="btn primary">新游戏</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="board-area">
+      <div class="board" id="board" aria-label="数独棋盘"></div>
+      <p class="status" id="status">准备开始…</p>
+    </div>
+
+    <aside class="panel">
+      <div class="pad" id="pad"></div>
+      <div class="actions">
+        <button class="btn" data-act="hint">提示 <kbd>H</kbd></button>
+        <button class="btn" data-act="check">检查 <kbd>C</kbd></button>
+        <button class="btn" data-act="undo">撤销 <kbd>U</kbd></button>
+        <button class="btn" data-act="notes" id="notesBtn">笔记 <kbd>N</kbd></button>
+        <button class="btn" data-act="clear">清除</button>
+        <button class="btn" data-act="reveal">显示答案</button>
+      </div>
+      <div class="stats" id="stats"></div>
+      <p class="keys">
+        键盘：<kbd>1</kbd>–<kbd>9</kbd> 填数 · <kbd>方向键</kbd> 移动 ·
+        <kbd>退格</kbd> 清除 · <kbd>空格</kbd> 笔记 · <kbd>H</kbd> 提示 ·
+        <kbd>C</kbd> 检查 · <kbd>U</kbd> 撤销
+      </p>
+    </aside>
+  </main>
+
+  <footer class="foot">
+    <span>纯前端实现，无依赖 · 题目保证唯一解</span>
+    <a href="https://github.com/zlhdxb/shudu" target="_blank" rel="noopener">GitHub 源码</a>
+  </footer>
+</div>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="card">
+    <h2 id="ovTitle">恭喜完成！</h2>
+    <p id="ovText"></p>
+    <button class="btn primary" id="ovAgain">再来一局</button>
+  </div>
+</div>
+
+<script src="sudoku-core.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

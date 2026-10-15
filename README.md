@@ -1,18 +1,79 @@
 # shudu · 数独
 
-一个用 Python + tkinter 写的数独游戏：**题目每次现场生成、保证唯一解**，支持四档难度、提示、笔记、撤销、计时。
-纯标准库，零第三方依赖。
+### ▶ [点这里在线玩](https://zlhdxb.github.io/shudu/) —— 打开就能玩，不用装任何东西，手机浏览器也可以
 
-A Sudoku game in pure Python + tkinter — puzzle generator with guaranteed unique solutions,
-four difficulty levels, hints, pencil marks, undo, and a timer. No dependencies.
+同一个数独游戏的两种形态，共用同一套算法和难度标定：
 
+| | 网页版（点击即玩） | 桌面版 |
+| --- | --- | --- |
+| 入口 | [zlhdxb.github.io/shudu](https://zlhdxb.github.io/shudu/) | `python sudoku_game.py` |
+| 技术 | 纯 HTML/CSS/JS，零依赖、零构建 | Python 3.7+ 标准库 `tkinter` |
+| 代码 | `docs/`（4 个文件） | `sudoku_game.py`（单文件） |
+| 联网 | 打开后离线可用 | 完全本地 |
+
+两版都**现场出题、保证唯一解**，四档难度，带提示／笔记／撤销／检查／计时。
+
+[![Play Online](https://img.shields.io/badge/Play-Online-2563eb)](https://zlhdxb.github.io/shudu/)
 ![Python](https://img.shields.io/badge/Python-3.7%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen)
 
 ---
 
-## 界面
+## 网页版：点击即玩
+
+**<https://zlhdxb.github.io/shudu/>**
+
+纯静态页面：一把 9×9 棋盘（DOM 网格，宫内细线／宫间粗线）、数字面板（显示每个数字还剩几个）、
+提示／检查／撤销／笔记／答案按钮、计时与剩余格数，适配手机窄屏，跟随系统深色模式。
+
+- **题目不是题库**：每次打开或点「新游戏」都现场算一道新题，并验证解唯一
+- **提示**：填出选中格（或随机一格）的正确答案，绿色标记，单独计数
+- **笔记**：一格内记多个候选数；填下数字后，同行同列同宫的对应候选会自动划掉
+- **冲突高亮**：填的数字与同行／同列／同宫重复时立刻标红
+- **检查**：和答案比对，把填错的标红并计数
+- **撤销**：最多 200 步
+- 键盘：`1`–`9` 填数、方向键移动、`退格` 清除、`空格`/`N` 笔记、`H` 提示、`C` 检查、`U` 撤销
+
+### 网页版怎么验证的
+
+`docs/` 里的代码用 **jsdom 加载真实页面**跑黑盒界面自测（不读内部状态，只看 DOM），
+共 39 项断言，连跑 8 轮全绿（每轮题目都是新随机生成的）。这套测试就在仓库里，
+`node tests/run.js` 可以自己复现：
+
+```
+PASS: 棋盘 81 格 · 9 个宫 · 数字键盘 9 个按钮 · 6 个功能按钮
+PASS: 页面上的题目唯一解（解数 1）· 终盘合法 · 提示数合理
+PASS: 点击后格子被选中 · 同行同列同宫高亮 20 格
+PASS: 键盘填入数字 · 玩家填的数字用玩家色 · 撤销后格子清空
+PASS: 点击数字键盘也能填数 · 退格清除
+PASS: 与同行列宫重复的数字自动标红（冲突高亮）
+PASS: 检查能发现错误 · 错误数字标红
+PASS: 笔记记录候选数 3 和 7 · 再按一次取消该候选
+PASS: 提示填入正确数字 · 提示填的数字用提示色 · 提示次数已统计
+PASS: 完成后弹出完成提示 · 弹窗显示用时 · 「再来一局」关闭弹窗
+PASS: 切到「专家」后提示数 22~26 · 「专家」题目也是唯一解
+RESULT: 39 passed, 0 failed
+```
+
+网页版核心 `docs/sudoku-core.js` 与桌面版 Python 实现做过交叉验证，同一批题目的
+**解字符串与"试错次数"评级完全一致**：
+
+| 题目 | 试错次数 | Python 版 | 网页版 |
+| --- | --- | --- | --- |
+| 入门题 | 0 | ✓ 一致 | ✓ 一致 |
+| AI Escargot | 14 | ✓ | ✓ |
+| Inkala 2012 | 928 | ✓ | ✓ |
+| 17 提示数题 | 733 | ✓ | ✓ |
+| 反暴力枚举题 | 6049 | ✓ | ✓ |
+
+---
+
+## 桌面版：Python + tkinter
+
+纯标准库，零第三方依赖。
+
+### 界面
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -29,7 +90,7 @@ four difficulty levels, hints, pencil marks, undo, and a timer. No dependencies.
 └──────────────────────────────────────────────────────────────┘
 ```
 
-## 运行
+### 运行
 
 需要 Python 3.7+（Windows 自带 tkinter；Linux 若报错请装 `python3-tk`）。
 
@@ -39,7 +100,7 @@ python sudoku_game.py
 
 Windows 上也可以双击 `run.bat`。
 
-## 玩法
+### 玩法
 
 | 操作 | 说明 |
 | --- | --- |
@@ -54,19 +115,23 @@ Windows 上也可以双击 `run.bat`。
 
 右侧数字面板也支持鼠标操作，某个数字已经用满 9 个时会自动变灰。
 
+---
+
 ## 难度
 
 难度不是靠"提示数"一个指标硬凑的，而是同时看**提示数**和**试错次数**
 （试错次数 = 只用"唯一候选"推不下去、必须试数的次数，也就是搜索树里的分支点）。
 
-| 难度 | 提示数 | 试错次数（实测 10 局） | 生成耗时 |
-| --- | --- | --- | --- |
-| 简单 | 44–52 | 0（只用唯一候选就能推完） | 87 ms |
-| 中等 | 33–39 | 0–1 | 41 ms |
-| 困难 | 27–31 | 2–13 | 95 ms |
-| 专家 | 22–26 | 12–161 | 185 ms |
+| 难度 | 提示数 | 试错次数（实测 10 局） | 桌面版耗时 | 网页版耗时 |
+| --- | --- | --- | --- | --- |
+| 简单 | 44–52 | 0（只用唯一候选就能推完） | 87 ms | 3 ms |
+| 中等 | 33–39 | 0–1 | 41 ms | 2 ms |
+| 困难 | 27–31 | 2–13 | 95 ms | 4 ms |
+| 专家 | 22–26 | 12–161 | 185 ms | 4 ms |
 
 每局的状态栏都会显示这一题的真实评级，所以同档难度里哪题更难，你一眼能看到。
+（网页版快很多是因为 JS 的位运算和类型化数组比 Python 的 `bin(x).count('1')` 快两个数量级，
+所以出题放在主线程直接算也感觉不到卡顿。）
 
 ## 题目长什么样
 
@@ -97,22 +162,46 @@ Windows 上也可以双击 `run.bat`。
 
 **判唯一解**：搜索时数到第 2 个解就停，比穷举快得多。
 
-**不卡界面**：出题在后台线程里跑，主线程只轮询结果，生成期间窗口不会变成"未响应"。
+**难度标定**：每档反复生成候选题目，按"提示数是否落在区间、试错次数是否落在区间"打分取最优，
+并带时间预算兜底（网页版 700 ms、桌面版 2.5 s）。
+
+**不卡界面**：桌面版出题放在后台线程里跑，主线程只轮询结果；网页版出题只要几毫秒，
+直接在主线程算。
 
 ## 自检
 
-代码自带两套测试，可以自己验证题目质量：
+**桌面版**（两套测试都内置在同一个文件里）：
 
 ```bash
 python sudoku_game.py --selftest 10   # 每档难度生成 10 题：校验唯一解、终盘合法、给定数字与解一致
 python sudoku_game.py --smoketest     # 界面冒烟测试（不弹窗口）：点击/键盘/笔记/提示/撤销/检查/胜利判定/渲染
 ```
 
+**网页版**（39 项黑盒界面断言，用 jsdom 加载真实页面来跑）：
+
+```bash
+npm install jsdom     # 唯一的开发依赖
+node tests/run.js
+```
+
+每跑一次都会现场随机生成新题目，多跑几轮更有意义。也可以只测核心算法
+（`sudoku-core.js` 同时支持浏览器和 Node）：
+
+```bash
+node -e "const C=require('./docs/sudoku-core.js');const p=C.makePuzzle('专家',C.mulberry32(1));console.log(p.clues,'个提示数，试错',p.branches,'次，唯一解：',C.isUnique(p.puzzle))"
+```
+
 ## 文件
 
 ```
-sudoku_game.py   游戏本体（单文件，含求解器、出题器、界面、自检）
-run.bat          Windows 一键启动
+docs/index.html       网页版页面
+docs/style.css        网页版样式
+docs/sudoku-core.js   网页版核心：求解 / 出题 / 难度评级（浏览器与 Node 共用）
+docs/app.js           网页版界面逻辑
+tests/browser-test.js 网页版界面黑盒断言（注入页面里运行）
+tests/run.js          网页版自测入口（jsdom）
+sudoku_game.py        桌面版：求解器 + 出题器 + 界面 + 自检（单文件）
+run.bat               Windows 一键启动（桌面版）
 ```
 
 ## License
